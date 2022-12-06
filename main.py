@@ -18,7 +18,7 @@ def load_data():
         if "env_doc_id" not in entryList[i]:
             entryList[i]["env_doc_id"] = "null"
         if "event_readtime" not in entryList[i]:
-            entryList[i]["event_readtime"] = 0
+            entryList[i]["event_readtime"] = -1
         df.loc[i] = [entryList[i]["ts"], entryList[i]
                      ["env_doc_id"], entryList[i]['visitor_country'], entryList[i]['visitor_useragent'], entryList[i]['visitor_uuid'], entryList[i]['event_readtime']]
 
@@ -87,14 +87,29 @@ def plot_data_browser():
         kind='bar', title='Popular Browsers')
     plt.show()
 
+# TODO: Fix this function
+
 
 def determine_readership():
+    resultdict = {}
+    templist = []
+    for i in range(0, len(df)):
+        if df.iloc[i, 5] > -1:
+            temp_entry = (df.iloc[i, 4], df.iloc[i, 5])
+            templist.append(temp_entry)
+    for each in templist:
+        if each[0] in resultdict:
+            resultdict[each[0]] += each[1]
+        resultdict.update([(each[0], each[1])])
+    print('The top 10 readers are:')
+    for each in resultdict:
+        print(each, resultdict[each], )
 
 
 def main():
     read_from_file()
     print(df.head())
-    plot_data_useragent()
+    determine_readership()
 
 
 main()
