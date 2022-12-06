@@ -133,9 +133,27 @@ def get_readership(file_data):
         for value in top_ten:
             print(value, top_ten[value])
 
+# Provides an object
 
-def get_doc_reader_list(doc):
-    return True
+
+def get_doc_reader_list(doc, df):
+    # Initialise user list
+    user_list = {
+
+    }
+    # Iterate through all entries of the data frame -> This is designed for extensibility, the userlist could be indexed for each document on a system that was
+    # connected to a database, allowing for more efficient calls to this in the future
+    for i in range(0, len(df)):
+        # Check if the document id is the same as the provided one
+        if df.iloc[i, 1] == doc:
+            # Check if the user is already in the user list, if so incremene the key by one
+            if df.iloc[i, 4] in user_list:
+                user_list[df.iloc[i, 4]] = user_list[df.iloc[i, 4]] + 1
+            # Increment the amount of reads for this document by one
+            else:
+                user_list[df.iloc[i, 4]] = 1
+    print(user_list)
+    return user_list
 
 
 def get_readers_doc_list(reader_list):
@@ -145,7 +163,10 @@ def get_readers_doc_list(reader_list):
 def main():
     file_data = read_from_file()
     print(file_data.head())
-    get_readership(file_data)
+    # get_readership(file_data)
+    for i in range(0, len(file_data)):
+        get_also_likes(file_data, file_data.iloc[i, 1])
+    # get_also_likes(file_data, "140222143932-91796b01f94327ee809bd759fd0f6c76")
 
 
 # Set the default state of the program to check what is being requested and run default operations accordingly
