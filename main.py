@@ -6,6 +6,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pycountry_convert as cc
 import user_agents as ua
+import numpy
+from collections import OrderedDict
 
 entryList = []
 df = pd.DataFrame(columns=[
@@ -87,9 +89,7 @@ def plot_data_browser():
         kind='bar', title='Popular Browsers')
     plt.show()
 
-# TODO: Fix this function
-
-
+# Determines the readership profiles for users, constructing an object of the user-id and their reading time, prints out the top ten readers
 def determine_readership():
     resultdict = {}
     templist = []
@@ -101,15 +101,38 @@ def determine_readership():
         if each[0] in resultdict:
             resultdict[each[0]] += each[1]
         resultdict.update([(each[0], each[1])])
-    print('The top 10 readers are:')
-    for each in resultdict:
-        print(each, resultdict[each], )
+
+    # Separetes the keys and values into their own respective lists
+    keys = list(resultdict.keys())
+    values = list(resultdict.values())
+    # Create a sorted index of the values from the previously gatehred values
+    sorted_index = numpy.argsort(values)
+    # Using dictionary comprehension we assign the keys by the sorted index values
+    sorted_dict = {keys[x]: values[x] for x in sorted_index}
+    
+    # Convert the dictionary of all values into a list of items, grab the first ten and then reconvert back into a dictionary using list slicing
+    size = len(list(sorted_dict))
+    top_ten = dict(list(sorted_dict.items())[size - 11: size - 1])
+    # Using the OrderedDict package, we reverse the top ten to properly rank them
+    top_ten_reverse = OrderedDict(reversed(list(top_ten.items())))
+    
+    # Returns the entire sorted dictionary, and the top ten ranked from highest to lowers.
+    return OrderedDict(reversed(list(sorted_dict.items()))), top_ten_reverse
+
+# Retrieves through the determine_readership function the readership values and then processes them accordingly.
+def get_readership():
+    ordered_readership, top_ten = determine_readership()
+    if top_ten:
+        print("Top ten readers by read time:")
+        for value in top_ten:
+            print(value, top_ten[value])
+            
 
 
 def main():
     read_from_file()
     print(df.head())
-    determine_readership()
+    get_readership()
 
 # Set the default state of the program to check what is being requested and run default operations accordingly
 if __name__ == "__main__":
