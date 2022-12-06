@@ -9,13 +9,14 @@ import user_agents as ua
 import numpy
 from collections import OrderedDict
 
-entryList = []
-df = pd.DataFrame(columns=[
+
+
+
+def load_data(entryList):
+    df = pd.DataFrame(columns=[
                   'ts', 'doc_UUID', 'visitor_country', 'browser', 'visitor_uuid', 'readtime'])
-df['readtime'] = df['readtime'].astype(int)
+    df['readtime'] = df['readtime'].astype(int)
 
-
-def load_data():
     for i in range(0, len(entryList)):
         if "env_doc_id" not in entryList[i]:
             entryList[i]["env_doc_id"] = "null"
@@ -23,9 +24,10 @@ def load_data():
             entryList[i]["event_readtime"] = -1
         df.loc[i] = [entryList[i]["ts"], entryList[i]
                      ["env_doc_id"], entryList[i]['visitor_country'], entryList[i]['visitor_useragent'], entryList[i]['visitor_uuid'], entryList[i]['event_readtime']]
-
+    return df
 
 def read_from_file():
+    entryList = []
     try:
         filename = input('Please enter filename:')
         with open(filename) as file:
@@ -36,10 +38,12 @@ def read_from_file():
         print('File not found')
         read_from_file()
     finally:
-        load_data()
+        df = load_data(entryList)
+        return df
 
 
-def plot_data_country():
+
+def plot_data_country(df):
     try:
         doc_id = input('Please enter doc_UUID:')
         df.loc[df['doc_UUID'] == doc_id].groupby(
@@ -51,7 +55,7 @@ def plot_data_country():
         print('doc_UUID not found. Please try again.')
 
 
-def plot_data_continent():
+def plot_data_continent(df):
     continentdict = {
         'EU': 'Europe',
         'AF': 'Africa',
@@ -76,12 +80,12 @@ def plot_data_continent():
         print('doc_UUID not found. Please try again.')
 
 
-def plot_data_useragent():
+def plot_data_useragent(df):
     df['browser'].value_counts().plot(kind='bar', title='Popular Useragents')
     plt.show()
 
 
-def plot_data_browser():
+def plot_data_browser(df):
     copy_df = df
     for i in range(0, len(copy_df)):
         copy_df.iloc[i, 3] = ua.parse(copy_df.iloc[i, 3]).browser.family
@@ -90,7 +94,7 @@ def plot_data_browser():
     plt.show()
 
 # Determines the readership profiles for users, constructing an object of the user-id and their reading time, prints out the top ten readers
-def determine_readership():
+def determine_readership(df):
     resultdict = {}
     templist = []
     for i in range(0, len(df)):
@@ -120,19 +124,23 @@ def determine_readership():
     return OrderedDict(reversed(list(sorted_dict.items()))), top_ten_reverse
 
 # Retrieves through the determine_readership function the readership values and then processes them accordingly.
-def get_readership():
-    ordered_readership, top_ten = determine_readership()
+def get_readership(file_data):
+    ordered_readership, top_ten = determine_readership(file_data)
     if top_ten:
         print("Top ten readers by read time:")
         for value in top_ten:
             print(value, top_ten[value])
             
+def get_doc_reader_list(doc):
+    return True
 
+def get_readers_doc_list(reader_list):
+    return True
 
 def main():
-    read_from_file()
-    print(df.head())
-    get_readership()
+    file_data = read_from_file()
+    print(file_data.head())
+    get_readership(file_data)
 
 # Set the default state of the program to check what is being requested and run default operations accordingly
 if __name__ == "__main__":
