@@ -1,5 +1,5 @@
 import pandas as pd
-import tkinter as tk
+# import tkinter as tk
 import matplot as mp
 import json
 import matplotlib as mpl
@@ -111,5 +111,7 @@ def main():
     print(df.head())
     determine_readership()
 
-
-main()
+# Set the default state of the program to check what is being requested and run default operations accordingly
+if __name__ == "__main__":
+    # Run the main function
+    main()
