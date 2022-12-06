@@ -1,5 +1,6 @@
 import pandas as pd
-# import tkinter as tk
+import tkinter as tk
+import tkinter.ttk as ttk
 import matplot as mp
 import json
 import matplotlib as mpl
@@ -10,13 +11,10 @@ import numpy
 from collections import OrderedDict
 
 
-
-
 def load_data(entryList):
     df = pd.DataFrame(columns=[
-                  'ts', 'doc_UUID', 'visitor_country', 'browser', 'visitor_uuid', 'readtime'])
+        'ts', 'doc_UUID', 'visitor_country', 'browser', 'visitor_uuid', 'readtime'])
     df['readtime'] = df['readtime'].astype(int)
-
     for i in range(0, len(entryList)):
         if "env_doc_id" not in entryList[i]:
             entryList[i]["env_doc_id"] = "null"
@@ -25,6 +23,7 @@ def load_data(entryList):
         df.loc[i] = [entryList[i]["ts"], entryList[i]
                      ["env_doc_id"], entryList[i]['visitor_country'], entryList[i]['visitor_useragent'], entryList[i]['visitor_uuid'], entryList[i]['event_readtime']]
     return df
+
 
 def read_from_file():
     entryList = []
@@ -40,7 +39,6 @@ def read_from_file():
     finally:
         df = load_data(entryList)
         return df
-
 
 
 def plot_data_country(df):
@@ -94,6 +92,8 @@ def plot_data_browser(df):
     plt.show()
 
 # Determines the readership profiles for users, constructing an object of the user-id and their reading time, prints out the top ten readers
+
+
 def determine_readership(df):
     resultdict = {}
     templist = []
@@ -113,34 +113,40 @@ def determine_readership(df):
     sorted_index = numpy.argsort(values)
     # Using dictionary comprehension we assign the keys by the sorted index values
     sorted_dict = {keys[x]: values[x] for x in sorted_index}
-    
+
     # Convert the dictionary of all values into a list of items, grab the first ten and then reconvert back into a dictionary using list slicing
     size = len(list(sorted_dict))
     top_ten = dict(list(sorted_dict.items())[size - 11: size - 1])
     # Using the OrderedDict package, we reverse the top ten to properly rank them
     top_ten_reverse = OrderedDict(reversed(list(top_ten.items())))
-    
+
     # Returns the entire sorted dictionary, and the top ten ranked from highest to lowers.
     return OrderedDict(reversed(list(sorted_dict.items()))), top_ten_reverse
 
 # Retrieves through the determine_readership function the readership values and then processes them accordingly.
+
+
 def get_readership(file_data):
     ordered_readership, top_ten = determine_readership(file_data)
     if top_ten:
         print("Top ten readers by read time:")
         for value in top_ten:
             print(value, top_ten[value])
-            
+
+
 def get_doc_reader_list(doc):
     return True
 
+
 def get_readers_doc_list(reader_list):
     return True
+
 
 def main():
     file_data = read_from_file()
     print(file_data.head())
     get_readership(file_data)
+
 
 # Set the default state of the program to check what is being requested and run default operations accordingly
 if __name__ == "__main__":
