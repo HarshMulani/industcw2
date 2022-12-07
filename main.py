@@ -220,7 +220,7 @@ def plot_also_likes(also_liked, doc):
     plt.show()
 
 
-def gui():
+def gui(df):
     root_window = tk.Tk()
     root_window.title("Team 11's Issuu Data Analysis Application")
     root_window.geometry("900x400")
@@ -271,19 +271,24 @@ def gui():
                         command=plot_data_continent(df, document_input.get()))
     btn_2b.grid(row=5, column=3, padx=5, pady=5)
 
-    btn_3a = ttk.Button(root_window, text="3a. Useragent Data")
+    btn_3a = ttk.Button(root_window, text="3a. Useragent Data",
+                        command=plot_data_useragent(df))
     btn_3a.grid(row=4, column=4, padx=5, pady=5)
 
-    btn_3b = ttk.Button(root_window, text="3b. Views by Browser")
+    btn_3b = ttk.Button(root_window, text="3b. Views by Browser",
+                        command=plot_data_browser(df))
     btn_3b.grid(row=5, column=4, padx=5, pady=5)
 
-    btn_4 = ttk.Button(root_window, text="4. View Frequent Readers")
+    btn_4 = ttk.Button(
+        root_window, text="4. View Frequent Readers", command=get_readership(df))
     btn_4.grid(row=6, column=4, padx=5, pady=5)
 
-    btn_5 = ttk.Button(root_window, text="5. Also-Likes")
+    btn_5 = ttk.Button(root_window, text="5. Also-Likes",
+                       command=get_also_likes(df, document_input.get()))
     btn_5.grid(row=4, column=6, padx=5, pady=5)
 
-    btn_5 = ttk.Button(root_window, text="6. Also-Likes Graph")
+    btn_5 = ttk.Button(root_window, text="6. Also-Likes Graph",
+                       command=plot_also_likes(df, document_input.get()))
     btn_5.grid(row=5, column=6, padx=5, pady=5)
 
     root_window.mainloop()
@@ -351,7 +356,7 @@ def main():
         else:
             print("A unique document id is required to run this function, please provide that after the -u tag or --udid tag")
     elif args.task == '7':
-        gui()
+        gui(file_data)
     # If no task is given let the user know what was wrong and the tasks they can implement.
     else:
         print("Please input a flag to denote task, either -t or --task followed by:")
