@@ -356,7 +356,7 @@ def main():
         else:
             print("A unique document id is required to run this function, please provide that after the -u tag or --udid tag")
     elif args.task == '7':
-        gui(file_data)
+        gui(read_from_file(args.file))
     # If no task is given let the user know what was wrong and the tasks they can implement.
     else:
         print("Please input a flag to denote task, either -t or --task followed by:")
