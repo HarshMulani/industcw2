@@ -263,10 +263,12 @@ def gui():
     user_input.grid(row=3, column=4, padx=5, pady=5, columnspan=1)
     user_input.configure(state="normal")
 
-    btn_2a = ttk.Button(root_window, text="2a. Views by Country")
+    btn_2a = ttk.Button(root_window, text="2a. Views by Country",
+                        command=plot_data_country(df, document_input.get()))
     btn_2a.grid(row=4, column=3, padx=5, pady=5)
 
-    btn_2b = ttk.Button(root_window, text="2b. Views by Continent")
+    btn_2b = ttk.Button(root_window, text="2b. Views by Continent",
+                        command=plot_data_continent(df, document_input.get()))
     btn_2b.grid(row=5, column=3, padx=5, pady=5)
 
     btn_3a = ttk.Button(root_window, text="3a. Useragent Data")
