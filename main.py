@@ -1,6 +1,6 @@
 import pandas as pd
-import tkinter as tk
-import tkinter.ttk as ttk
+# import tkinter as tk
+# import tkinter.ttk as ttk
 import matplot as mp
 import json
 import matplotlib as mpl
@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import pycountry_convert as cc
 import user_agents as ua
 import numpy
+import argparse
 from collections import OrderedDict
 
 
@@ -24,10 +25,10 @@ def load_data(entryList):
                      ["env_doc_id"], entryList[i]['visitor_country'], entryList[i]['visitor_useragent'], entryList[i]['visitor_uuid'], entryList[i]['event_readtime']]
     return df
 
-def read_from_file():
+def read_from_file(file):
     entryList = []
     try:
-        filename = input('Please enter filename:')
+        filename = file
         with open(filename) as file:
             for entryObject in file:
                 entryDict = json.loads(entryObject)
@@ -40,9 +41,9 @@ def read_from_file():
         return df
 
 
-def plot_data_country(df):
+def plot_data_country(df, udid):
     try:
-        doc_id = input('Please enter doc_UUID:')
+        doc_id = udid
         df.loc[df['doc_UUID'] == doc_id].groupby(
             'visitor_country').size().plot(kind='bar', title='Countries that visited ' + doc_id)
         plt.show()
@@ -52,7 +53,7 @@ def plot_data_country(df):
         print('doc_UUID not found. Please try again.')
 
 
-def plot_data_continent(df):
+def plot_data_continent(df, udid):
     continentdict = {
         'EU': 'Europe',
         'AF': 'Africa',
@@ -63,7 +64,7 @@ def plot_data_continent(df):
         'SA': 'South America'
     }
     try:
-        doc_id = input('Please enter doc_UUID:')
+        doc_id = udid
         copy_df = df.loc[df['doc_UUID'] == doc_id]
         for i in range(0, len(copy_df)):
             copy_df.iloc[i, 2] = continentdict.get(cc.country_alpha2_to_continent_code(
@@ -192,7 +193,6 @@ def get_also_likes(df, doc):
     # Using the OrderedDict package, we reverse the top ten to properly rank them
     # We then plot the values derived and return the list
     top_ten_reverse = OrderedDict(reversed(list(top_ten.items())))
-    plot_also_likes(top_ten_reverse, doc)
     return top_ten_reverse
 
 def plot_also_likes(also_liked, doc):
@@ -210,16 +210,62 @@ def plot_also_likes(also_liked, doc):
     plt.show()
 
 def main():
-    file_data = read_from_file()
-    print(file_data.head())
-    # get_readership(file_data)
-    increment = 0
-    # for i in range(0, len(file_data)):
-    #     liked = get_also_likes(file_data, file_data.iloc[i, 1])
-    #     if liked > 1:
-    #         increment = increment + 1
-    # print(increment)
-    get_also_likes(file_data, "140224132818-2a89379e80cb7340d8504ad002fab76d")
+    # Initialise the parser using the argparser library to simplify the calling
+    parser = argparse.ArgumentParser()
+    # Set the arguments that can be accepted
+    parser.add_argument("-u", "--uuid", help="Unique User ID")
+    parser.add_argument("-d", "--udid", help="Unique Doc ID")
+    parser.add_argument("-t", "--task", help="Task Number")
+    parser.add_argument("-f", "--file", help="File Name")
+
+    # Get the arguments from the command line
+    args = parser.parse_args()
+
+    # If no file is provided throw and error and return, otherwise read the provided file
+    if args.file == None:
+        print("You must specify a file that will provide the sample data in question to use this program. Add a -f, or --file flag and the path to denote this")
+        return
+    else:
+        file_data = read_from_file(args.file)
+
+    # Get the task from the arguments and check which task is being called, based on the task determine if it needs another flag and then throw an issue if none is provided
+    task = args.task
+    if args.task == '2a':
+        if args.udid:
+            plot_data_country(file_data, args.udid)
+        else:
+            print("To execute the histogram of document views by country, please add this after the -d or -udid flag")
+    elif args.task ==  '2b':
+        if args.udid:
+            plot_data_continent(file_data, args.udid)
+        else:
+            print("To execute the histogram of document views by continent, please add this after the -d or -udid flag")
+    elif args.task ==  '3a':
+        plot_data_browser(file_data)
+    elif args.task ==  '3b':
+        plot_data_useragent(file_data)
+    elif args.task ==  '4':
+        get_readership(file_data=file_data)
+    elif args.task ==  '5d':
+        if args.udid:
+            top_ten = get_also_likes(file_data, args.udid)
+            print("Top ten related docs are: ")
+            for entry in top_ten:
+                print(entry)
+        else:
+            print("A unique document id is required to run this function, please provide that after the -u tag or --udid tag")
+    elif args.task ==  '6':
+        if args.udid:
+            top_ten = get_also_likes(file_data, args.udid)
+            plot_also_likes(top_ten, args.udid)
+        else:
+            print("A unique document id is required to run this function, please provide that after the -u tag or --udid tag")
+    elif args.task ==  '7':
+        print(True)
+    # If no task is given let the user know what was wrong and the tasks they can implement.
+    else:
+        print("Please input a flag to denote task, either -t or --task followed by:")
+        print("2a, 2b, 3a, 3b, 4, 5d, 6, or 7")
 
 
 # Set the default state of the program to check what is being requested and run default operations accordingly
