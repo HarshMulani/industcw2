@@ -73,8 +73,9 @@ def plot_data_continent(df, udid):
         doc_id = udid
         copy_df = df.loc[df['doc_UUID'] == doc_id]
         for i in range(0, len(copy_df)):
-            copy_df.iloc[i, 2] = continentdict.get(cc.country_alpha2_to_continent_code(
-                copy_df.iloc[i, 2]))
+            if copy_df.iloc[i, 2] not in continentdict.keys():
+                copy_df.iloc[i, 2] = continentdict.get(cc.country_alpha2_to_continent_code(
+                    copy_df.iloc[i, 2]))
         copy_df.groupby('visitor_country').size().plot(
             kind='bar', title='Continents that visited ' + doc_id)
         plt.show()
