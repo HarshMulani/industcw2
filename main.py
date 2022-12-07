@@ -240,10 +240,10 @@ def gui(df):
         "Calibri", 12), background="#FCF1EB")
     label_dataset.grid(row=1, column=3, padx=10, pady=5)
 
-    dataset_input
+    global dataset_input
     dataset_input = ttk.Entry(root_window, width=55)
     dataset_input.grid(row=1, column=4, padx=5, pady=5, columnspan=2)
-    dataset_input.configure(state="normal")
+    dataset_input.configure(state="readonly")
 
     file_button = ttk.Button(
         root_window, text="Select JSON", command=open_file)
