@@ -24,7 +24,6 @@ def load_data(entryList):
                      ["env_doc_id"], entryList[i]['visitor_country'], entryList[i]['visitor_useragent'], entryList[i]['visitor_uuid'], entryList[i]['event_readtime']]
     return df
 
-
 def read_from_file():
     entryList = []
     try:
@@ -92,8 +91,6 @@ def plot_data_browser(df):
     plt.show()
 
 # Determines the readership profiles for users, constructing an object of the user-id and their reading time, prints out the top ten readers
-
-
 def determine_readership(df):
     resultdict = {}
     templist = []
@@ -152,21 +149,77 @@ def get_doc_reader_list(doc, df):
             # Increment the amount of reads for this document by one
             else:
                 user_list[df.iloc[i, 4]] = 1
-    print(user_list)
     return user_list
 
 
-def get_readers_doc_list(reader_list):
-    return True
+def get_readers_doc_list(reader_list, df):
+    return_dict = {
 
+    }
+    for i in range(0, len(df)):
+        # Check if the document id is the same as the provided one
+        if df.iloc[i, 4] in reader_list:
+            # Check if the user is already in the user list, if so incremene the key by one
+            if df.iloc[i, 1] in return_dict:
+                return_dict[df.iloc[i, 1]] = return_dict[df.iloc[i, 1]] + 1
+
+            # Increment the amount of reads for this document by one
+            else:
+                return_dict[df.iloc[i, 1]] = 1
+    print(return_dict)
+    return return_dict
+
+def get_also_likes(df, doc):
+    # call the reader_list and user_list funcitons to compile the also_liked list.
+    users = get_doc_reader_list(doc, df)
+    also_liked = get_readers_doc_list(users, df)
+
+     # Separetes the keys and values into their own respective lists
+    keys = list(also_liked.keys())
+    values = list(also_liked.values())
+    # Create a sorted index of the values from the previously gatehred values
+    sorted_index = numpy.argsort(values)
+    # Using dictionary comprehension we assign the keys by the sorted index values
+    sorted_dict = {keys[x]: values[x] for x in sorted_index}
+    # Convert the dictionary of all values into a list of items, grab the first ten and then reconvert back into a dictionary using list slicing
+    size = len(list(sorted_dict))
+
+    # If the size is less than ten, then it means that we need to simply plot what values we do have
+    if size > 10:
+        top_ten = dict(list(sorted_dict.items())[size - 11: size - 1])
+    else:
+        top_ten = dict(list(sorted_dict.items()))
+    # Using the OrderedDict package, we reverse the top ten to properly rank them
+    # We then plot the values derived and return the list
+    top_ten_reverse = OrderedDict(reversed(list(top_ten.items())))
+    plot_also_likes(top_ten_reverse, doc)
+    return top_ten_reverse
+
+def plot_also_likes(also_liked, doc):
+    
+    # Separate the keys and values in order to get them in a list format to use in the plot
+    keys = also_liked.keys()
+    values = also_liked.values()
+    # Plot the keys and values, with a width of .08
+    plt.bar(keys, values, width=.08)
+    # Set the name for x and the y values to show they are the documents and the read count, additionally gives the name
+    plt.xlabel("Documents")
+    plt.ylabel("Read count")
+    plt.title("Documents also liked for " + doc)
+    # Finally show the plot
+    plt.show()
 
 def main():
     file_data = read_from_file()
     print(file_data.head())
     # get_readership(file_data)
-    for i in range(0, len(file_data)):
-        get_also_likes(file_data, file_data.iloc[i, 1])
-    # get_also_likes(file_data, "140222143932-91796b01f94327ee809bd759fd0f6c76")
+    increment = 0
+    # for i in range(0, len(file_data)):
+    #     liked = get_also_likes(file_data, file_data.iloc[i, 1])
+    #     if liked > 1:
+    #         increment = increment + 1
+    # print(increment)
+    get_also_likes(file_data, "140224132818-2a89379e80cb7340d8504ad002fab76d")
 
 
 # Set the default state of the program to check what is being requested and run default operations accordingly
