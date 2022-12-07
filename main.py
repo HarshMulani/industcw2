@@ -240,14 +240,15 @@ def gui(df):
         "Calibri", 12), background="#FCF1EB")
     label_dataset.grid(row=1, column=3, padx=10, pady=5)
 
-    global dataset_input
+    dataset_input
     dataset_input = ttk.Entry(root_window, width=55)
     dataset_input.grid(row=1, column=4, padx=5, pady=5, columnspan=2)
-    dataset_input.configure(state="readonly")
+    dataset_input.configure(state="normal")
 
     file_button = ttk.Button(
         root_window, text="Select JSON", command=open_file)
     file_button.grid(row=1, column=6, padx=5, pady=5)
+    dataset_input.insert(0, file_button.invoke())
 
     label_document = ttk.Label(root_window, text="Document UUID: ", font=(
         "Calibri", 12), background="#FCF1EB")
@@ -264,32 +265,32 @@ def gui(df):
     user_input.configure(state="normal")
 
     btn_2a = ttk.Button(root_window, text="2a. Views by Country",
-                        command=plot_data_country(df, document_input.get()))
+                        command=lambda: self.plot_data_country(df, document_input.get()))
     btn_2a.grid(row=4, column=3, padx=5, pady=5)
 
     btn_2b = ttk.Button(root_window, text="2b. Views by Continent",
-                        command=plot_data_continent(df, document_input.get()))
+                        command=lambda: self.plot_data_continent(df, document_input.get()))
     btn_2b.grid(row=5, column=3, padx=5, pady=5)
 
     btn_3a = ttk.Button(root_window, text="3a. Useragent Data",
-                        command=plot_data_useragent(df))
+                        command=lambda: self.plot_data_useragent(df))
     btn_3a.grid(row=4, column=4, padx=5, pady=5)
 
     btn_3b = ttk.Button(root_window, text="3b. Views by Browser",
-                        command=plot_data_browser(df))
+                        command=lambda: self.plot_data_browser(df))
     btn_3b.grid(row=5, column=4, padx=5, pady=5)
 
     btn_4 = ttk.Button(
-        root_window, text="4. View Frequent Readers", command=get_readership(df))
+        root_window, text="4. View Frequent Readers", command=lambda: self.get_readership(df))
     btn_4.grid(row=6, column=4, padx=5, pady=5)
 
     btn_5 = ttk.Button(root_window, text="5. Also-Likes",
-                       command=get_also_likes(df, document_input.get()))
+                       command=lambda: self.get_also_likes(df, document_input.get()))
     btn_5.grid(row=4, column=6, padx=5, pady=5)
 
-    btn_5 = ttk.Button(root_window, text="6. Also-Likes Graph",
-                       command=plot_also_likes(df, document_input.get()))
-    btn_5.grid(row=5, column=6, padx=5, pady=5)
+    btn_6 = ttk.Button(root_window, text="6. Also-Likes Graph",
+                       command=lambda: self.plot_also_likes(df, document_input.get()))
+    btn_6.grid(row=5, column=6, padx=5, pady=5)
 
     root_window.mainloop()
 
